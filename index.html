@@ -471,7 +471,7 @@ body.mg{padding-bottom:calc(88px + env(safe-area-inset-bottom,0px))}
   <section id="view-off" hidden>
     <div class="narrow auth">
       <div class="brandbig" id="offBrand"></div>
-      <div class="intro"><h1>Kartu nonaktif</h1><p class="muted">Kartu member kamu sedang dinonaktifkan. Hubungi kasir Temma untuk informasi lebih lanjut.</p></div>
+      <div class="intro"><h1>Kartu nonaktif</h1><p class="muted">Kartu member kamu sedang dinonaktifkan. Hubungi kasir DTOP untuk informasi lebih lanjut.</p></div>
       <button class="btn big ghost" id="offOut" type="button">Keluar</button>
     </div>
   </section>
@@ -678,7 +678,7 @@ body.mg{padding-bottom:calc(88px + env(safe-area-inset-bottom,0px))}
             <h2>Panduan file</h2>
             <ul class="spec">
               <li>Format SVG dengan rasio 1,586 : 1, contoh viewBox 0 0 856 540.</li>
-              <li>Hanya latar. Pada tata letak Standar dan Platinum, logo dan label tier ikut digambar di SVG. Aplikasi menaruh nama, nomor kartu, tanggal bergabung, dan QR di zona yang ditandai. Teko dan dripper di sisi belakang dari sistem.</li>
+              <li>Hanya latar. Pada tata letak Standar dan Platinum, logo dan label tier ikut digambar di SVG. Aplikasi menaruh nama, nomor kartu, tanggal bergabung, dan QR di zona yang ditandai. Fryer, box, dan bucket di sisi belakang dari sistem.</li>
               <li>Sisi belakang pakai latar gelap atau merah tua, supaya fryer, box, dan bucket tetap terbaca.</li>
               <li>Maksimal 400 KB per file. Hindari teks yang belum diubah jadi outline.</li>
             </ul>
@@ -735,7 +735,7 @@ body.mg{padding-bottom:calc(88px + env(safe-area-inset-bottom,0px))}
             <ul class="spec">
               <li><b>Perangkat staf (paling mudah):</b> centang "Ingat perangkat ini sebagai perangkat staf" saat masuk. Berikutnya aplikasi langsung membuka layar PIN.</li>
               <li><b>Kode di kolom nomor:</b> di layar masuk pelanggan ketik *1# untuk Kasir atau *2# untuk Manajemen, lalu tekan Masuk.</li>
-              <li><b>Ketuk logo Temma 5 kali</b> di layar masuk pelanggan.</li>
+              <li><b>Ketuk logo DTOP 5 kali</b> di layar masuk pelanggan.</li>
             </ul>
             <p class="hint">Semuanya tetap meminta PIN.</p>
           </section>
@@ -1537,7 +1537,7 @@ var clone=function(o){return JSON.parse(JSON.stringify(o))};
 var sleep=function(ms){return new Promise(function(r){setTimeout(r,ms)})};
 var reduceMotion=function(){return window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches};
 var LV=10;
-function defTier(){return {mids:[{level:5,name:'Gratis 1 add-on pilihan'}],final:'Gratis 1 minuman pilihan'}}
+function defTier(){return {mids:[{level:5,name:'Gratis 1 potong ayam'}],final:'Gratis 1 paket ayam'}}
 var DEFAULTS={brand:'DTOP',rupiahPerToken:25000,startLevel:2,tiers:[defTier(),defTier(),defTier(),defTier()],pin:'',mgmtPin:'',maxPerTx:10,manualMax:3,designEvents:[],feedbackUrl:'',reviewUrl:''};
 function store_(kind){return {get:function(k){try{return window[kind].getItem(k)}catch(e){return null}},set:function(k,v){try{window[kind].setItem(k,v)}catch(e){}},del:function(k){try{window[kind].removeItem(k)}catch(e){}}}}
 var ls=store_('localStorage'), ss=store_('sessionStorage');
@@ -2064,7 +2064,7 @@ function setAuthMode(m){
 }
 function renderAuth(){
   $('#authBrand').innerHTML=wordmark(S.cfg.brand);
-  $('#authTitle').textContent=S.authMode==='masuk'?'Selamat datang Temmatics':'Buat kartu member';
+  $('#authTitle').textContent=S.authMode==='masuk'?'Selamat datang':'Buat kartu member';
   $('#authSub').textContent=S.authMode==='masuk'?'':'Daftar sekali, kartu member digitalmu langsung siap dipakai.';
   if(GAS_UI&&typeof gasTitles==='function')gasTitles();
 }
@@ -2085,7 +2085,7 @@ $('#authForm').addEventListener('submit',async function(e){
   btn.disabled=true;
   try{
     var found=await store.findByPhone(phone);
-    if(found&&found.active===false){say('Kartu dengan nomor ini sedang dinonaktifkan. Hubungi kasir Temma untuk informasi lebih lanjut.');return}
+    if(found&&found.active===false){say('Kartu dengan nomor ini sedang dinonaktifkan. Hubungi kasir DTOP untuk informasi lebih lanjut.');return}
     if(found){if(S.authMode==='daftar')toast('Nomor ini sudah terdaftar. Kartu dibuka.');openMember(found.code);return}
     if(S.authMode==='masuk'){setAuthMode('daftar');say('Nomor ini belum terdaftar. Isi nama untuk membuat kartu.');$('#nameIn').focus();return}
     var code=await newCode($('#cabangIn').value),now=Date.now();
@@ -2415,7 +2415,7 @@ async function commitPour(P){
     var cur=GAS_UI&&S.member?clone(S.member):await store.getMember(S.me);
     if(cur&&cur.active===false){toast('Kartu sedang nonaktif.');return}
     if(!cur||(cur.tokens||0)<1||lvl(cur)>=LV||lvl(cur)!==P.base){
-      toast('Belum bisa pouring. Kartu diperbarui.');
+      toast('Belum bisa memberi cap. Kartu diperbarui.');
       P.base=cur?lvl(cur):P.base;P.pl=P.sl=P.base;S.partial=null;return;
     }
     var to=P.base+1,m=clone(cur);
@@ -2431,7 +2431,7 @@ function pourOK(){
   var m=S.member;if(!m||S.animating||S.busy||S.pouring&&PS&&PS.mode!=='drag'&&PS.mode!=='home')return false;
   if(!$('#voucher').hidden)return false;
   if((PS?PS.base:lvl(m))>=LV){toast('Server sudah penuh.');return false}
-  if((m.tokens||0)<1){toast('Belum ada pouring. Dapatkan dari kasir saat kamu membayar.');return false}
+  if((m.tokens||0)<1){toast('Belum ada potong. Dapatkan dari kasir saat kamu membayar.');return false}
   return true;
 }
 function kettleDown(e){
@@ -2849,17 +2849,17 @@ function renderCalc(){
   var amt=amountVal(),per=S.cfg.rupiahPerToken,tk=Math.floor(amt/per),el=$('#calc'),btn=$('#giveBtn'),mx=maxTx();
   if(pickedOff()){el.textContent='Member nonaktif. Transaksi tidak bisa diproses.';btn.disabled=true;btn.textContent='Beri potong';return}
   if(!amt){el.textContent='';btn.disabled=true;btn.textContent='Beri potong';return}
-  if(tk<1){el.textContent='Belum mencapai '+rp(per)+' untuk 1 pouring.';btn.disabled=true;btn.textContent='Beri potong';return}
-  if(mx&&tk>mx){el.textContent='Maksimal '+mx+' pouring per transaksi ('+rp(mx*per)+'). Untuk nominal lebih besar, hubungi manajemen.';btn.disabled=true;btn.textContent='Beri potong';return}
+  if(tk<1){el.textContent='Belum mencapai '+rp(per)+' untuk 1 potong.';btn.disabled=true;btn.textContent='Beri potong';return}
+  if(mx&&tk>mx){el.textContent='Maksimal '+mx+' potong per transaksi ('+rp(mx*per)+'). Untuk nominal lebih besar, hubungi manajemen.';btn.disabled=true;btn.textContent='Beri potong';return}
   var rest=amt%per;
-  el.textContent=rp(amt)+' menjadi '+tk+' pouring'+(rest?' (sisa '+rp(rest)+' tidak dihitung)':'')+'.';
-  btn.disabled=false;btn.textContent='Beri '+tk+' pouring';
+  el.textContent=rp(amt)+' menjadi '+tk+' potong'+(rest?' (sisa '+rp(rest)+' tidak dihitung)':'')+'.';
+  btn.disabled=false;btn.textContent='Beri '+tk+' potong';
 }
 function renderManual(){
   var mx=S.role==='mgmt'?99:(parseInt(S.cfg.manualMax,10)||0),off=mx<1;
-  $('#mtHint').textContent=off?'Tambah potong manual dinonaktifkan oleh manajemen.':(S.role==='mgmt'?'Dicatat sebagai tambahan dari manajemen.':'Maksimal '+mx+' pouring per input. Dicatat lengkap dengan alasan dan namamu.');
+  $('#mtHint').textContent=off?'Tambah potong manual dinonaktifkan oleh manajemen.':(S.role==='mgmt'?'Dicatat sebagai tambahan dari manajemen.':'Maksimal '+mx+' potong per input. Dicatat lengkap dengan alasan dan namamu.');
   var po=pickedOff();
-  if(po)$('#mtHint').textContent='Member nonaktif. Tidak bisa menambah pouring.';
+  if(po)$('#mtHint').textContent='Member nonaktif. Tidak bisa menambah potong.';
   $('#mtBtn').disabled=off||po;$('#mtCount').disabled=off||po;
 }
 function renderPicked(){
@@ -2918,8 +2918,8 @@ async function giveManual(){
   if(S.busy||!S.picked)return;
   var mx=S.role==='mgmt'?99:(parseInt(S.cfg.manualMax,10)||0),n=parseInt($('#mtCount').value.replace(/\D/g,''),10)||0;
   if(mx<1)return;
-  if(n<1){toast('Isi jumlah pouring minimal 1.');return}
-  if(n>mx){toast('Maksimal '+mx+' pouring per input. Hubungi manajemen untuk jumlah lebih besar.');return}
+  if(n<1){toast('Isi jumlah potong minimal 1.');return}
+  if(n>mx){toast('Maksimal '+mx+' potong per input. Hubungi manajemen untuk jumlah lebih besar.');return}
   var note=$('#mtNote').value.trim(),reason=$('#mtReason').value+(note?': '+note:'');
   S.busy=true;
   try{
@@ -2929,7 +2929,7 @@ async function giveManual(){
     pushLog(m,{type:'bonus',tokens:n,reason:reason,by:who()});
     await store.setMember(m.code,m);
     $('#mtCount').value='1';$('#mtNote').value='';
-    toast(m.name+' dapat +'+n+' pouring (manual)');
+    toast(m.name+' dapat +'+n+' potong (manual)');
   }catch(e){toast('Gagal menyimpan. Coba lagi.')}
   finally{S.busy=false}
 }
@@ -3010,12 +3010,12 @@ function renderOverview(){
   $('#mTotalMem').textContent=S.members.length+' member terdaftar'+(nOff?' · '+nOff+' nonaktif':'');
   $('#mKpis').innerHTML=
     kpi('Belanja tercatat',rp(omzet),tx+' transaksi · rata-rata '+rp(tx?omzet/tx:0),true)+
-    kpi('Pouring diberikan',nf.format(given),'dari kasir dan manual')+
-    kpi('Pouring dituang',nf.format(pours),'oleh member')+
+    kpi('Potong diberikan',nf.format(given),'dari kasir dan manual')+
+    kpi('Potong dipakai',nf.format(pours),'oleh member')+
     kpi('Reward ditukar',nf.format(rw),'di kasir')+
     kpi('Member baru',nf.format(newM),'bergabung')+
     kpi('Member aktif',nf.format(Object.keys(act).length),'bertransaksi')+
-    kpi('Pouring belum dipakai',nf.format(S.members.reduce(function(a,m){return a+(m.tokens||0)},0)),'saldo semua member');
+    kpi('Potong belum dipakai',nf.format(S.members.reduce(function(a,m){return a+(m.tokens||0)},0)),'saldo semua member');
   renderChart(all,p);
   renderTierDist();
   var pend=S.members.map(function(m){return {m:m,p:pending(m)}}).filter(function(x){return x.p.length})
@@ -3078,7 +3078,7 @@ $('#mSearch').addEventListener('input',renderMemberTab);
 $('#mTierF').addEventListener('click',function(e){var b=e.target.closest('button[data-t]');if(!b)return;S.tierF=b.dataset.t;renderMemberTab()});
 
 /* ---------- manajemen: data ---------- */
-var TYPEF=[['all','Semua'],['earn','Transaksi'],['pour','Pouring'],['redeem','Reward'],['bonus','Manual'],['adjust','Koreksi'],['join','Bergabung']];
+var TYPEF=[['all','Semua'],['earn','Transaksi'],['pour','Potong'],['redeem','Reward'],['bonus','Manual'],['adjust','Koreksi'],['join','Bergabung']];
 function evKind(e){return e.type==='stamp'?'pour':e.type}
 function renderDataTab(){
   $('#mTypeF').innerHTML=TYPEF.map(function(t){return '<button type="button" data-ty="'+t[0]+'" aria-pressed="'+(S.typeF===t[0])+'">'+t[1]+'</button>'}).join('');
@@ -3103,13 +3103,13 @@ async function doExport(kind){
   var rows,label;
   if(kind==='members'){
     label='member';
-    rows=[['Kode','Nama','WhatsApp','Tier','Level kemasan','Pouring','Total belanja','Kunjungan','Reward ditukar','Bergabung','Terakhir aktif','Status','Alasan nonaktif','Email']].concat(
+    rows=[['Kode','Nama','WhatsApp','Tier','Level kemasan','Potong','Total belanja','Kunjungan','Reward ditukar','Bergabung','Terakhir aktif','Status','Alasan nonaktif','Email']].concat(
       S.members.slice().sort(function(a,b){return a.name.localeCompare(b.name,'id')}).map(function(m){
         return [m.code,m.name,showPhone(m.phone),tierName(m),lvl(m),m.tokens||0,m.totalSpent||0,m.visits||0,m.rewards||0,m.createdAt?isoLocal(m.createdAt):'',m.updatedAt?isoLocal(m.updatedAt):'',m.active===false?'Nonaktif':'Aktif',m.inactiveReason||'',m.email||''];
       }));
   }else{
     label='aktivitas';
-    rows=[['Waktu','Kode','Nama','Jenis','Belanja (Rp)','Pouring','Level','Petugas','Keterangan']].concat(
+    rows=[['Waktu','Kode','Nama','Jenis','Belanja (Rp)','Potong','Level','Petugas','Keterangan']].concat(
       allEvents().map(function(e){
         var x=logText(e);
         return [isoLocal(e.t),e.code,e.name,x.t,e.amount||0,e.tokens||e.dTokens||0,e.level||e.toLevel||'',e.by||'',String(x.s).replace(/^\+(\d)/,'Tambah $1').replace(/^-(\d)/,'Kurang $1')];
@@ -3162,13 +3162,13 @@ function renderMSheet(force){
     '<h2 style="font-size:15px">Reward</h2>'+rewardStatusHTML(m)+
     (off?'<div class="banner off"><span>Member nonaktif<span class="sub">'+esc(m.inactiveReason||'Tanpa alasan')+(m.inactiveAt?' · '+esc(fmtTime(m.inactiveAt)):'')+'</span></span></div>':'')+
     '<details class="sub"'+(off?' open':'')+'><summary>Status member</summary><form class="subbody adj" id="stForm" novalidate>'+
-      '<p class="hint">'+(off?'Member nonaktif tidak bisa masuk, menuang, menerima pouring, atau menukar reward.':'Nonaktifkan jika kartu disalahgunakan atau member tidak lagi dilayani. Riwayat dan saldo tetap tersimpan, dan bisa diaktifkan kembali kapan saja.')+'</p>'+
+      '<p class="hint">'+(off?'Member nonaktif tidak bisa masuk, menerima potong, atau menukar reward.':'Nonaktifkan jika kartu disalahgunakan atau member tidak lagi dilayani. Riwayat dan saldo tetap tersimpan, dan bisa diaktifkan kembali kapan saja.')+'</p>'+
       '<div class="field"><label for="stWhy">'+(off?'Catatan (opsional)':'Alasan (wajib)')+'</label><input id="stWhy" maxlength="80" autocomplete="off"></div>'+
       '<p class="err" id="stErr" hidden></p>'+
       '<button class="btn'+(off?'':' danger')+'" type="submit">'+(off?'Aktifkan kembali':'Nonaktifkan member')+'</button></form></details>'+
     '<details class="sub"><summary>Koreksi data</summary><form class="subbody adj" id="adjForm" novalidate>'+
       '<p class="hint">Dipakai untuk memperbaiki salah input. Setiap koreksi tercatat di riwayat member.</p>'+
-      '<div class="field"><label for="adjTok">Tambah atau kurangi pouring</label><input id="adjTok" inputmode="numeric" autocomplete="off" placeholder="Contoh: 2 atau -1"></div>'+
+      '<div class="field"><label for="adjTok">Tambah atau kurangi potong</label><input id="adjTok" inputmode="numeric" autocomplete="off" placeholder="Contoh: 2 atau -1"></div>'+
       '<div class="two"><div class="field"><label for="adjLv">Level kemasan</label><select id="adjLv">'+lvOpts+'</select></div>'+
       '<div class="field"><label for="adjTier">Tier</label><select id="adjTier">'+tOpts+'</select></div></div>'+
       '<div class="field"><label for="adjWhy">Alasan koreksi (wajib)</label><input id="adjWhy" maxlength="80" autocomplete="off"></div>'+
@@ -3209,7 +3209,7 @@ $('#mSheetBody').addEventListener('submit',async function(e){
     var cur=await store.getMember(S.mSel);if(!cur){bad('Member tidak ditemukan.');return}
     var m=clone(cur),entry={type:'adjust',by:'Manajemen',reason:why},changed=false;
     if(dT){
-      if((m.tokens||0)+dT<0){bad('Pouring tidak boleh kurang dari 0. Saat ini '+(m.tokens||0)+'.');return}
+      if((m.tokens||0)+dT<0){bad('Potong tidak boleh kurang dari 0. Saat ini '+(m.tokens||0)+'.');return}
       m.tokens=(m.tokens||0)+dT;entry.dTokens=dT;changed=true;
     }
     if(nl!==lvl(m)){m.stamps=nl;entry.toLevel=nl;changed=true}
@@ -3234,7 +3234,7 @@ function tierSetHTML(){
     var nx=TIERS[i+1];
     return '<fieldset class="tset"><legend><i style="background:'+T.b+'"></i>'+T.n+'</legend>'+
       '<div class="field"><label>Jumlah reward di tengah</label><select class="ts-count"><option value="0">0 (tidak ada)</option><option value="1">1 kali</option><option value="2">2 kali</option><option value="3">3 kali</option></select></div>'+rows+
-      '<div class="field"><label>Reward saat server penuh (level '+LV+')'+(nx?' · naik ke '+nx.n:' · tier tertinggi')+'</label><input class="ts-final" maxlength="60"></div></fieldset>';
+      '<div class="field"><label>Reward saat kemasan penuh (level '+LV+')'+(nx?' · naik ke '+nx.n:' · tier tertinggi')+'</label><input class="ts-final" maxlength="60"></div></fieldset>';
   }).join('');
 }
 function fillTierSettings(){
@@ -3276,8 +3276,8 @@ $('#polForm').addEventListener('submit',formGuard('polErr',async function(bad){
   var brand=$('#set-brand').value.trim(),rate=parseInt($('#set-rate').value.replace(/\D/g,''),10)||0,sl=parseInt($('#set-start').value,10)||0;
   var mx=parseInt($('#set-maxtx').value.replace(/\D/g,''),10),mm=parseInt($('#set-manual').value.replace(/\D/g,''),10);
   if(!brand)return bad('Nama kafe wajib diisi.');
-  if(rate<1000)return bad('Nilai per pouring minimal Rp 1.000.');
-  if(!(mx>=1&&mx<=50))return bad('Batas pouring per transaksi antara 1 dan 50.');
+  if(rate<1000)return bad('Nilai per potong minimal Rp 1.000.');
+  if(!(mx>=1&&mx<=50))return bad('Batas potong per transaksi antara 1 dan 50.');
   if(!(mm>=0&&mm<=20))return bad('Batas tambah manual antara 0 dan 20.');
   await saveCfg({brand:brand,rupiahPerToken:rate,startLevel:sl,maxPerTx:mx,manualMax:mm});
   toast('Kebijakan tersimpan.');
@@ -3293,7 +3293,7 @@ $('#rwForm').addEventListener('submit',formGuard('rwErr',async function(bad){
       prev=lv;mids.push({level:lv,name:nm});
     }
     var fin=$('.ts-final',fs).value.trim();
-    if(!fin)return bad(TIERS[i].n+': reward saat server penuh wajib diisi.');
+    if(!fin)return bad(TIERS[i].n+': reward saat kemasan penuh wajib diisi.');
     tiers.push({mids:mids,final:fin});
   }
   await saveCfg({tiers:tiers});
@@ -3440,7 +3440,7 @@ function pickSvg(){
 }
 var GUIDE={
   front:[['Logo',3,5.5,35.7,37],['Nama',38.7,5.5,27.3,37],['QR',66,5.5,31,37]],
-  back:[['Teks',6,5.2,44,17],['Teko',8,24,50,22],['Dripper dan server',55,7,40,53]]
+  back:[['Teks',6,5.2,44,17],['Fryer',8,24,50,22],['Box dan bucket',55,7,40,53]]
 };
 /* zona depan layout standar dan Platinum: kiri, atas, lebar, tinggi dalam persen kartu */
 var GUIDE_L={
@@ -3627,7 +3627,7 @@ $('#staffPick').addEventListener('click',function(e){
 /* ---------- mulai ---------- */
 function onConfig(cfg){
   var c=Object.assign({},DEFAULTS,cfg||{});
-  if(cfg&&!cfg.tiers&&(cfg.reward5||cfg.reward10)){c.tiers=DEFAULTS.tiers.map(function(){return {mids:[{level:5,name:cfg.reward5||'Gratis 1 add-on pilihan'}],final:cfg.reward10||'Gratis 1 minuman pilihan'}})}
+  if(cfg&&!cfg.tiers&&(cfg.reward5||cfg.reward10)){c.tiers=DEFAULTS.tiers.map(function(){return {mids:[{level:5,name:cfg.reward5||'Gratis 1 potong ayam'}],final:cfg.reward10||'Gratis 1 paket ayam'}})}
   S.cfg=c;
   if(S.cust==='auth')renderAuth();
   if(S.member)syncMine();
@@ -3700,7 +3700,7 @@ function gasTitles(){
     $('#authTitle').textContent='Buat PIN';
     $('#authSub').textContent='PIN dipakai untuk masuk lagi di perangkat ini, tanpa kode email.';
   }else if(S.authMode==='masuk'){
-    $('#authTitle').textContent='Selamat datang Temmatics';
+    $('#authTitle').textContent='Selamat datang';
     $('#authSub').textContent='';
   }
   $('#authSub').hidden=!$('#authSub').textContent;
@@ -3743,8 +3743,8 @@ async function sendLoginOtp(phone,purpose){
   var rs=await store.loginStart(phone,purpose);
   AU.phone=phone;AU.payload={mode:'masuk',phone:phone};
   if(rs.s==='none'){setAuthMode('daftar');authSay('Nomor ini belum terdaftar. Isi data di bawah untuk membuat kartu.');$('#nameIn').focus();return}
-  if(rs.s==='inactive'){authSay('Kartu dengan nomor ini sedang dinonaktifkan. Hubungi kasir Temma untuk informasi lebih lanjut.');return}
-  if(rs.s==='noemail'){authSay('Kartu ini belum punya email terdaftar. Hubungi kasir Temma.');return}
+  if(rs.s==='inactive'){authSay('Kartu dengan nomor ini sedang dinonaktifkan. Hubungi kasir DTOP untuk informasi lebih lanjut.');return}
+  if(rs.s==='noemail'){authSay('Kartu ini belum punya email terdaftar. Hubungi kasir DTOP.');return}
   if(rs.s==='otp'){AU.kind=purpose;showOtp(rs.hint);return}
   authSay('Belum bisa melanjutkan. Coba lagi.');
 }
@@ -3794,7 +3794,7 @@ async function doStart(){
     var rs=await store.regStart({name:name,phone:phone,email:email,pin:pin,cab:cabPilih()});
     AU.phone=phone;AU.payload={mode:'daftar',name:name,phone:phone,email:email,pin:pin,cab:cabPilih()};
     if(rs.s==='exists'){setAuthMode('masuk');authSay('Nomor ini sudah terdaftar. Silakan masuk.');return}
-    if(rs.s==='inactive'){authSay('Kartu dengan nomor ini sedang dinonaktifkan. Hubungi kasir Temma untuk informasi lebih lanjut.');return}
+    if(rs.s==='inactive'){authSay('Kartu dengan nomor ini sedang dinonaktifkan. Hubungi kasir DTOP untuk informasi lebih lanjut.');return}
     if(rs.s==='otp'){AU.kind='reg';showOtp(rs.hint);return}
     authSay('Belum bisa melanjutkan. Coba lagi.');return;
   }
@@ -3810,7 +3810,7 @@ async function doStart(){
   }
   if(r.s==='new_device'){$('#cPinIn').value='';await sendLoginOtp(phone,'login');return}
   if(r.s==='none'){setAuthMode('daftar');authSay('Nomor ini belum terdaftar. Isi data di bawah untuk membuat kartu.');$('#nameIn').focus();return}
-  if(r.s==='inactive'){authSay('Kartu dengan nomor ini sedang dinonaktifkan. Hubungi kasir Temma untuk informasi lebih lanjut.');return}
+  if(r.s==='inactive'){authSay('Kartu dengan nomor ini sedang dinonaktifkan. Hubungi kasir DTOP untuk informasi lebih lanjut.');return}
   authSay('Belum bisa melanjutkan. Coba lagi.');
 }
 async function pinLink(purpose){
@@ -4016,7 +4016,7 @@ boot();
 })();
 </script>
 <script>
-/* Temmatics Card - ajakan pasang aplikasi (PWA).
+/* DTOP Card - ajakan pasang aplikasi (PWA).
    Pelanggan baru: popup sekali saat pertama buka. Setelahnya: tombol transparan di bawah halaman masuk. */
 (function(){
   if(!/^https?:$/.test(location.protocol))return;
@@ -4031,7 +4031,7 @@ boot();
 
   var dp=null,popup=null,sheet=null,btn=null;
   var inApp=/FBAN|FBAV|Instagram|Line\/|MicroMessenger|musical_ly|TikTok|Snapchat|Twitter/i.test(ua);
-  var NAMA='Temmatics Card';
+  var NAMA='DTOP Card';
 
   var css='\
 .ins-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin-top:clamp(10px,3vh,26px);padding:11px 14px;background:transparent;border:1px solid var(--line,#DBE1F0);border-radius:12px;color:var(--stamp,#072D78);font:600 14px/1.2 var(--f,system-ui);cursor:pointer}\
