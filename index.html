@@ -3791,6 +3791,7 @@ async function doStart(){
     if(!name){authSay('Nama wajib diisi.');return}
     if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)){authSay('Email belum benar. Dipakai untuk kode verifikasi.');return}
     var pin=checkNewPins();if(!pin)return;
+    if(!CAB_ADA||!cabPilih()){authSay(CAB_ADA?'Pilih cabang tempat kamu mendaftar.':'Pendaftaran belum dibuka. DTOP belum menetapkan cabang.');return}
     var rs=await store.regStart({name:name,phone:phone,email:email,pin:pin,cab:cabPilih()});
     AU.phone=phone;AU.payload={mode:'daftar',name:name,phone:phone,email:email,pin:pin,cab:cabPilih()};
     if(rs.s==='exists'){setAuthMode('masuk');authSay('Nomor ini sudah terdaftar. Silakan masuk.');return}
@@ -3860,22 +3861,28 @@ var CABANG=[
   {k:'CBD',n:'DTOP Cibadak'}
 ];
 /* Daftar cabang datang dari Config_DT di server, yang diisi dari dashboard
-   ACK Group. CABANG di atas hanya cadangan kalau config belum sempat dibaca. */
+   ACK Group. Tidak ada daftar cadangan: belum ada cabang = belum bisa daftar. */
+var CAB_ADA=false;
 function isiCabang(ls){
   var el=$('#cabangIn');if(!el)return;
-  var pakai=(ls&&ls.length?ls:CABANG.map(function(c){return {kode:c.k,nama:c.n,aktif:true}}))
-    .filter(function(c){return c.aktif!==false});
-  el.innerHTML=pakai.map(function(c){
-    return '<option value="'+esc(c.kode)+'">'+esc(c.nama)+'</option>';
-  }).join('');
+  if(ls===null){CAB_ADA=false;el.innerHTML='<option value="">Memuat daftar cabang…</option>';el.disabled=true;return}
+  var pakai=(ls||[]).filter(function(c){return c.aktif!==false});
+  CAB_ADA=pakai.length>0;
+  var sebelum=el.value;
+  el.disabled=!CAB_ADA;
+  el.innerHTML=CAB_ADA
+    ?pakai.map(function(c){return '<option value="'+esc(c.kode)+'">'+esc(c.nama)+'</option>'}).join('')
+    :'<option value="">Belum ada cabang</option>';
+  if(sebelum&&pakai.some(function(c){return c.kode===sebelum}))el.value=sebelum;
 }
 isiCabang(null);
 (function pantauCabang(){
-  var t=setInterval(function(){
-    var ls=S.cfg&&S.cfg.cabang;
-    if(ls&&ls.length){clearInterval(t);isiCabang(ls)}
-  },1200);
-  setTimeout(function(){clearInterval(t)},60000);
+  var sig='';
+  setInterval(function(){
+    if(!S.cfg)return;                       /* config belum terbaca */
+    var ls=S.cfg.cabang||[], k=JSON.stringify(ls);
+    if(k!==sig){sig=k;isiCabang(ls)}
+  },2000);
 })();
 
 var ALFA='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
