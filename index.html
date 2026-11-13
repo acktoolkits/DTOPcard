@@ -2455,7 +2455,7 @@ function pourOK(){
   var m=S.member;if(!m||S.animating||S.busy||S.pouring&&PS&&PS.mode!=='drag'&&PS.mode!=='home')return false;
   if(!$('#voucher').hidden)return false;
   if((PS?PS.base:lvl(m))>=LV){toast('Server sudah penuh.');return false}
-  if((m.tokens||0)<1){toast('Belum ada potong. Dapatkan dari kasir saat kamu membayar.');return false}
+  if((m.tokens||0)<1){toast('Kamu belum memiliki potongan ayam siap saji. Dapatkan potongan ayam kamu setiap pembelian DTOP.');return false}
   return true;
 }
 function kettleDown(e){
